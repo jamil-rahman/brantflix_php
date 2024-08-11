@@ -1,7 +1,7 @@
 <?php
 session_start();
-require 'db.php'; //conn file
-require 'data_classes/User.php';
+require 'db.php'; // Include database connection
+require 'data_classes/Cart.php'; // Include Cart class
 
 // Check if the user is logged in
 if (!isset($_SESSION['user_id'])) {
@@ -9,14 +9,12 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-// Fetch movies from the database
-$query = "SELECT movie_id, title, photo, price, description, release_date FROM movies";
-$result = $conn->query($query);
-$movies = $result->fetch_all(MYSQLI_ASSOC);
+$user_id = $_SESSION['user_id'];
+$cart = new Cart($conn);
+$cartItems = $cart->getCartItems($user_id);
 
 
-// Get the status message from the query parameter
-$status = isset($_GET['status']) ? $_GET['status'] : '';
+
 ?>
 
 <!DOCTYPE html>
@@ -24,7 +22,7 @@ $status = isset($_GET['status']) ? $_GET['status'] : '';
 
 <head>
     <meta charset="UTF-8">
-    <title>Brantflix - Home</title>
+    <title>Brantflix - Checkout</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
@@ -106,7 +104,6 @@ $status = isset($_GET['status']) ? $_GET['status'] : '';
         }
 
         .footer {
-            
             background-color: black;
             color: white;
             margin-top: 60px;
@@ -119,7 +116,7 @@ $status = isset($_GET['status']) ? $_GET['status'] : '';
 </head>
 
 <body>
-    <!-- Navbar -->
+
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container-fluid">
 
@@ -148,35 +145,44 @@ $status = isset($_GET['status']) ? $_GET['status'] : '';
         </div>
     </nav>
 
-    <!-- Card Container -->
-    <div class="container">
-        <h2 class="title">Browse our collection of Movies</h2>
-        <div class="card-grid">
-            <?php foreach ($movies as $movie) : ?>
-                <div class="card">
-                    <img src="<?= $movie['photo'] ?>" class="card-img-top" alt="<?= $movie['title'] ?>">
-                    <div class="card-body">
-                        <h5 class="card-title"><?= $movie['title'] ?></h5>
-                        <details>
-                            <summary>Description</summary>
-                            <p class="card-text"><?= $movie['description'] ?></p>
-                        </details>
-                        <p class="card-text"><strong>Price:</strong> $<?= $movie['price'] ?></p>
-                        <p class="card-text"><strong>Release Year:</strong> <?= date('Y', strtotime($movie['release_date'])) ?></p>
-                        <form action="add_to_cart.php" method="POST">
-                            <input type="hidden" name="movie_id" value="<?= $movie['movie_id'] ?>">
-                            <div class="mb-3">
-                                <label for="quantity_<?= $movie['movie_id'] ?>" class="form-label">Quantity</label>
-                                <input type="number" style="width: 30%;" class="form-control" id="quantity_<?= $movie['movie_id'] ?>" name="quantity" value="1" min="1" required>
-                            </div>
-                            <button type="submit" class="btn btn-dark w-100"><img src="assets/cart.png" height="20" width="20" /> Add to Cart</button>
-                        </form>
-                    </div>
-                </div>
-            <?php endforeach; ?>
-        </div>
-    </div>
 
+    <div class="container mt-5">
+        <h2 class="title">Your Cart</h2>
+
+        <?php if (isset($error)): ?>
+            <div class="alert alert-danger">
+                <?= $error ?>
+            </div>
+        <?php endif; ?>
+
+        <?php if (count($cartItems) > 0): ?>
+            <div class="row">
+                <?php foreach ($cartItems as $item): ?>
+                    <div class="col-md-4">
+                        <div class="card mb-4">
+                            <img src="<?= $item['photo'] ?>" class="card-img-top" alt="<?= $item['title'] ?>">
+                            <div class="card-body">
+                                <h5 class="card-title"><?= $item['title'] ?></h5>
+                                <p class="card-text">Price: $<?= $item['price'] ?> ea</p>
+                                <p class="card-text">Quantity: <?= $item['quantity'] ?></p>
+                                <form method="POST">
+                                    <input type="hidden" name="cart_id" value="<?= $item['cart_id'] ?>">
+                                    <button type="submit" name="remove_item" class="btn btn-remove w-100">Remove</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+
+            <a href="order.php"><button type="submit" name="checkout" class="mt-3 btn btn-success">Proceed to Checkout</button></a>
+
+        <?php else: ?>
+            <div class="alert alert-info">
+                Your cart is empty.
+            </div>
+        <?php endif; ?>
+    </div>
 
     <div class="footer">
         <img src="assets/logo.png" height="150" width="150" alt="Brantflix logo">
@@ -184,16 +190,6 @@ $status = isset($_GET['status']) ? $_GET['status'] : '';
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var status = '<?= $status ?>';
-            if (status === 'success' || status === 'error') {
-                var toastElement = document.getElementById('statusToast');
-                var toast = new bootstrap.Toast(toastElement);
-                toast.show();
-            }
-        });
-    </script>
 </body>
 
 </html>

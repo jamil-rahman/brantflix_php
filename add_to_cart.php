@@ -1,7 +1,7 @@
 <?php
 session_start();
 require 'db.php'; // Include database connection file
-require 'Cart.php'; // Include Cart class file
+require 'data_classes/Cart.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Check if the user is logged in

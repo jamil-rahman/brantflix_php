@@ -1,7 +1,7 @@
 <?php
 session_start();
-require 'db.php'; // Include database connection file
-require 'User.php'; // Include User class file
+require 'db.php'; 
+require 'data_classes/User.php';
 
 $error = '';
 

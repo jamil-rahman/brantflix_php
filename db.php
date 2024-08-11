@@ -1,7 +1,7 @@
 <?php
 $servername = "localhost";
 $username = "root";
-$password = ""; // Default password for root is usually empty in XAMPP
+$password = "";
 $dbname = "movie_store";
 
 // Create connection

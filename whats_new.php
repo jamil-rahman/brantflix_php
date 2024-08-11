@@ -1,7 +1,7 @@
 <?php
 session_start();
-require 'db.php'; // Include database connection file
-require 'User.php'; // Include User class file
+require 'db.php'; // conn file
+require 'data_classes/User.php';
 
 // Check if the user is logged in
 if (!isset($_SESSION['user_id'])) {
@@ -22,8 +22,9 @@ $movies = $result->fetch_all(MYSQLI_ASSOC);
     <meta charset="UTF-8">
     <title>Brantflix - What's New</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto&display=swap');
+       @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Oxygen:wght@300;400;700&family=Raleway:ital,wght@0,100..900;1,100..900&family=Roboto&display=swap');
 
         body {
@@ -37,6 +38,7 @@ $movies = $result->fetch_all(MYSQLI_ASSOC);
             margin-bottom: 40px;
             border-bottom: 1px solid red;
             padding: 20px;
+            background-color: black;
         }
 
         .item {
@@ -100,9 +102,9 @@ $movies = $result->fetch_all(MYSQLI_ASSOC);
         }
 
         .footer {
-            background-color: #343a40;
+            background-color: black;
             color: white;
-            margin-top: 20px;
+            margin-top: 60px;
             text-align: center;
             padding: 10px;
             position: relative;
@@ -113,9 +115,10 @@ $movies = $result->fetch_all(MYSQLI_ASSOC);
 
 <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">Brantflix</a>
+
+            <a class="navbar-brand" href="index.php"> <img src="assets/logo.png" height="100" width="100" alt="Brantflix logo"></a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -128,7 +131,7 @@ $movies = $result->fetch_all(MYSQLI_ASSOC);
                         <a class="nav-link item active" href="whats_new.php">What's New</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link item" href="#">Check Out</a>
+                        <a class="nav-link item" href="checkout.php">Cart</a>
                     </li>
                 </ul>
                 <ul class="navbar-nav">
@@ -140,8 +143,9 @@ $movies = $result->fetch_all(MYSQLI_ASSOC);
         </div>
     </nav>
 
-    <!-- Movie Cards -->
+    <!-- Card Container -->
     <div class="container">
+    <h2 class="title">Latest releases</h2>
         <div class="card-grid">
             <?php foreach ($movies as $movie) : ?>
                 <div class="card">
@@ -169,7 +173,8 @@ $movies = $result->fetch_all(MYSQLI_ASSOC);
     </div>
 
     <div class="footer">
-        <p>&copy; 2024 Brantflix. All rights reserved.</p>
+        <img src="assets/logo.png" height="150" width="150" alt="Brantflix logo">
+        <p>&copy; All rights reserved.</p>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

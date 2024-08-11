@@ -1,6 +1,6 @@
 <?php
 require 'db.php'; // Include database connection file
-require 'User.php'; // Include User class file
+require 'data_classes/User.php';
 
 $error = '';
 $success = '';
